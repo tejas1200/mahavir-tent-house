@@ -1,7 +1,8 @@
 from django.contrib import admin
 from .models import Service, Testimonial
 from django.contrib import admin
-from .models import Staff, StaffSalary
+from .models import Staff, StaffSalary, Product, Banner
+
 
 # Register your models here.
 
