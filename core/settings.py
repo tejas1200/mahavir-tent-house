@@ -1,7 +1,9 @@
 import os
 from pathlib import Path
 import dj_database_url
+from dotenv import load_dotenv
 
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -12,8 +14,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get(
     "SECRET_KEY", "django-insecure-3ko70zjdv!v7+5ailo=3rfcx_b0xv$nz60xkg=k69c=hbp2w1z"
 )
-DEBUG = os.environ.get("DEBUG", "True") == "True"
-# DEBUG = False
+# DEBUG = os.environ.get("DEBUG", "True") == "True"
+DEBUG = False
 ALLOWED_HOSTS = ["*"]
 
 # ------------------------------------------------------------------------------
@@ -43,7 +45,7 @@ SILENCED_SYSTEM_CHECKS = ["security.W019"]
 # ------------------------------------------------------------------------------
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
-    "whitenoise.middleware.WhiteNoiseMiddleware",  # ✅ For Railway static hosting
+    # "whitenoise.middleware.WhiteNoiseMiddleware",  
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -79,29 +81,24 @@ WSGI_APPLICATION = "core.wsgi.application"
 # DATABASE CONFIGURATION (PostgreSQL on Railway, Local fallback)
 # ------------------------------------------------------------------------------
 
+DATABASES = {
+    "default": dj_database_url.config(
+        default=os.environ.get("DATABASE_URL"),
+        conn_max_age=600,
+        ssl_require=True
+    )
+}
 
-
-if os.environ.get("DATABASE_URL"):
-    # ✅ Railway / Production
-    DATABASES = {
-        'default': dj_database_url.config(
-            default=os.environ['DATABASE_URL'],
-            conn_max_age=600,
-            ssl_require=True
-        )
-    }
-else:
-    # ✅ Local Development fallback
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': 'mth',
-            'USER': 'postgres',
-            'PASSWORD': 'tejas',
-            'HOST': 'localhost',
-            'PORT': '5432',
-        }
-    }
+# DATABASES = {
+#         'default': {
+#             'ENGINE': 'django.db.backends.postgresql',
+#             'NAME': 'mth',
+#             'USER': 'postgres',
+#             'PASSWORD': 'tejas',
+#             'HOST': 'localhost',
+#             'PORT': '5432',
+#         }
+# }
 # ------------------------------------------------------------------------------
 # PASSWORD VALIDATION
 # ------------------------------------------------------------------------------
@@ -126,24 +123,19 @@ USE_TZ = True
 STATIC_URL = "/static/"
 STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
-# Ensure STATIC_ROOT exists (for Railway)
-if not os.path.exists(STATIC_ROOT):
-    os.makedirs(STATIC_ROOT, exist_ok=True)
 
+# STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
-STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
 
-# ✅ Cloudinary setup (for production)
-if os.environ.get("CLOUDINARY_CLOUD_NAME"):
-    DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
-    CLOUDINARY_STORAGE = {
-        "CLOUD_NAME": os.environ.get("Root"),
-        "API_KEY": os.environ.get("817363994834176"),
-        "API_SECRET": os.environ.get("9cQUgkkNSdgbL5AYLYrdTR120BU"),
-    }
-else:
-    MEDIA_URL = "/media/"
-    MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+CLOUDINARY_STORAGE = {
+    "CLOUD_NAME": os.environ.get("CLOUDINARY_CLOUD_NAME"),
+    "API_KEY": os.environ.get("CLOUDINARY_API_KEY"),
+    "API_SECRET": os.environ.get("CLOUDINARY_API_SECRET"),
+}
+
+# MEDIA_URL = "/media/"
+# MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
 # ------------------------------------------------------------------------------
 # DEFAULT SETTINGS
