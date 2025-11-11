@@ -1142,7 +1142,7 @@ def dashboard(request):
 
     # --- ROLE-BASED DASHBOARD ---
     if request.user.role == 'admin':
-        return render(request, 'dash/Dashboard.html', context)
+        return render(request, 'dash/dashboard.html', context)
     elif request.user.role == 'manager':
         return render(request, 'dash/manager_dashboard.html', context)
     else:
